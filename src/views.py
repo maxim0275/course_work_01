@@ -1,4 +1,4 @@
-from src.utils import reading_operations_from_excel, get_card_out
+from src.utils import reading_operations_from_excel, get_card_out, get_stocks
 
 
 def get_main():
@@ -19,10 +19,14 @@ def get_main():
     # top5_transactions = get_top5_tran()
 
     # Записать Курс валют
+
     # Записать Стоимость акций из S&P500
+    stocks_companys = get_stocks()
 
     data["greeting"] = "Добрый вечер"
     data["cards"] = cards_out_data
+    data["stock_prices"] = stocks_companys
+
     return data
 
 

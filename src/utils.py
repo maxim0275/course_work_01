@@ -1,5 +1,6 @@
 import numpy as np
-np.set_printoptions(legacy='1.25')
+import requests
+from dotenv import load_dotenv
 
 import json
 import os
@@ -7,13 +8,16 @@ from datetime import datetime
 
 import pandas as pd
 from pandas import DataFrame, isna
+from requests import request
+
+np.set_printoptions(legacy='1.25')
 
 
 def reading_operations_from_excel(file_path: str = "") -> DataFrame:
     """Преобразование файла из EXCEL в словарь"""
     # Получить имяя файла с операциями
     if file_path == "":
-        file_path = os.path.join(os.path.dirname(__file__), "..", 'data', get_filename_opers_data())
+        file_path = os.path.join(os.path.dirname(__file__), "..", 'data', get_user_info(1))
 
     if not os.path.isfile(file_path):
         print("Файл не существует")
@@ -28,11 +32,18 @@ def reading_operations_from_excel(file_path: str = "") -> DataFrame:
     return dataframe
 
 
-def get_filename_opers_data():
+def get_user_info(what_info_get):
+    # 1: filename_opers_data, 2 : user_stocks, 3: user_currencies
+
     path_to_file: str = os.path.join(os.path.dirname(__file__), '../user_settings.json')
     with open(path_to_file, 'r', encoding='utf-8') as file:
         loaded_data = json.load(file)
-    return loaded_data["filename_opers_data"]
+        if what_info_get == 1:
+            return loaded_data["filename_opers_data"]
+        elif what_info_get == 2:
+            return loaded_data["user_stocks"]
+        else:
+            return loaded_data["user_currencies"]
 
 
 def get_card_out(data_cards, date_param):
@@ -56,14 +67,10 @@ def get_card_out(data_cards, date_param):
     # Для каждой карты занести сумму расходов и сумму кешбэка
     dicts = {"last_digits": "", "total_spent": 0, "cashback": 0}
     for card in card_series_pay.keys():
-
         dicts["last_digits"] = card[1:]
         dicts["total_spent"] = abs(card_series_pay.get(card))
         dicts["cashback"] = abs(card_series_cashback.get(card))
-
-        print(dicts)
-
-        result.append(dicts)
+        result.append(dicts.copy())
     return result
 
 
@@ -72,37 +79,42 @@ def format_date_oper(date_str):
     return result
 
 
-# print(format_date_oper("31.12.2021 16:44:00"))
-#
-# date_end = "2021-12-31"  # datetime.strptime(date_param, "%Y-%m-%d")
-# date_begin = "2021-12-1"  # date_end.replace(day=1)
-
-# print(date_end>date_begin)
-
-# import pandas as pd
-#
-# # Представим, что у нас есть DataFrame
-# df = pd.DataFrame({
-#     'date': ['31.12.2020 16:44:00', '31.12.2021 16:44:00', '31.12.2022 16:44:00'],
-#     'value': [10, 20, None]
-# })
-#
-# print(df)
-#
-# df1 = df.loc[df['value'].isna() == True]
-#
-# print(df1)
-
-# df["date"] = pd.to_datetime(df["date"], format="%d.%m.%Y %H:%M:%S")
-# print(df)
-# # Теперь мы проведем фильтрацию по интервалу с '2023-01-10' по '2023-01-31'
-# filtered_df = df[(df['date'] >= '2023-01-10') & (df['date'] <= '2023-01-31')]
-# print(filtered_df)
-
-
 def get_top5_tran():
     """
 
     """
     result = []
     return result
+
+
+def get_stocks():
+    # Прочитать компании из настроек пользователя
+    company_list = get_user_info(2)
+
+    stocks_data = []
+    # Для каждой компании считать цену акций
+    stock_string = {"stock": "", "price": 0}
+    for company in company_list:
+        stock_for_company = get_stock(company)
+        print(company)
+        stock_string["stock"] = company
+        stock_string["price"] = stock_for_company["high"]
+        print(stock_string)
+        stocks_data.append(stock_string.copy())
+        print(stocks_data)
+    return stocks_data
+
+
+def get_stock(company_code):
+    url = f'https://eodhd.com/api/real-time/{company_code}.US?api_token=68b537ae5548f1.52917953&fmt=json'
+    payload = {}
+    load_dotenv()
+    api_key = os.getenv("API_KEY")
+    headers = {"apikey": api_key}
+    response = request("GET", url, headers=headers, data=payload)
+    result = 0
+    if response.status_code == 200:
+        result_json = response.json()
+    else:
+        return []
+    return result_json
