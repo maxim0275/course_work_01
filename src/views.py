@@ -3,6 +3,8 @@ from src.cat_web_page_main import (greeting, get_card_out, get_currency_rates,
 from src.reports import spending_by_category, report_decorator, report_decorator_wo_filename
 from src.services import get_profitable_cashback
 from src.utils import reading_operations_from_excel
+import numpy as np
+np.set_printoptions(legacy='1.25')
 
 
 def get_cat_web_page_main():
