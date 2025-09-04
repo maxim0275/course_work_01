@@ -8,6 +8,9 @@ np.set_printoptions(legacy='1.25')
 
 
 def get_cat_web_page_main():
+    """
+    возвращает JSON данные для главной страницы
+    """
     data = {"greeting": "", "cards": "", "top_transactions": "", "currency_rates": "", "stock_prices": ""}
 
     # Записать приветствие
@@ -38,10 +41,10 @@ def get_cat_web_page_main():
     return data
 
 
-# print(get_cat_web_page_main())
-
 def get_cat_serivces_profitable_cashback():
-    # Прочитать данные операций
+    """
+    читает данные транзакций и возвращает выгодные кешбэки
+    """
     operations_data = reading_operations_from_excel()
     operations_data = get_profitable_cashback(operations_data, year_par="2021", month_par="11")
     return operations_data
@@ -50,15 +53,19 @@ def get_cat_serivces_profitable_cashback():
 # print(get_cat_serivces_profitable_cashback())
 
 def get_cat_reoprt_spending_by_category():
-    # Прочитать данные операций
+    """
+    читает данные транзакций и покупки по категории
+    """
     operations_data = reading_operations_from_excel()
     data = spending_by_category(operations_data, "Супермаркеты")
-
     return data
 
 
 @report_decorator('../data/report.txt')
 def generate_report():
+    """
+    возвращает данные для отчета
+    """
     # Формируем отчет
     report = get_cat_reoprt_spending_by_category()
     return report
@@ -70,7 +77,9 @@ generate_report()
 
 @report_decorator_wo_filename()
 def generate_report_wo_filename():
-    # Формируем отчет
+    """
+    возвращает данные для отчета
+    """
     report = get_cat_reoprt_spending_by_category()
     return report
 

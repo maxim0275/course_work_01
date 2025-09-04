@@ -13,6 +13,9 @@ np.set_printoptions(legacy='1.25')
 def spending_by_category(transactions: pd.DataFrame,
                          category: str,
                          date: Optional[str] = None) -> str:
+    """
+    возвращает суммы трат по выбранной категории за три месяца от переданной даты
+    """
     if date is None:
         date_end = datetime.strptime("31.12.2021", "%d.%m.%Y")
     else:
@@ -22,9 +25,9 @@ def spending_by_category(transactions: pd.DataFrame,
     # Преобразовать столбец даты
     transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S")
 
-    # Оставить только данные с нужной категорией и статусом ОК
+    # Оставить только данные с нужной категорией и статусом ОК и только платежи (отрицательные суммы)
     date_cat = transactions.loc[(transactions["Категория"] == category) & (transactions["Статус"] == "OK") & (
-                transactions["Сумма операции"] < 0)]
+            transactions["Сумма операции"] < 0)]
 
     # Оставить только данные за требуемый период
     data_need = date_cat.loc[((date_cat["Дата операции"] >= date_begin) & (date_cat["Дата операции"] <= date_end))]
@@ -48,25 +51,9 @@ def spending_by_category(transactions: pd.DataFrame,
     return result_json
 
 
-# my_date = datetime.strptime("01.11.2025", "%d.%m.%Y").date()
-# print(my_date)
-#
-# # my_date1 = date_add_month(my_date)
-# # print(my_date1)
-# #
-# # my_date2 = my_date - datetime.timedelta(months=3)
-# # print(my_date2)
-# #
-#
-# last_month = my_date - relativedelta(months=3)
-# print(last_month)
-# # need to specify %Y%m%d as your output format
-# print(last_month.strftime("%Y%m%d"))
-
-
 def report_decorator(filename):
     """
-    Декоратор с передачей имени файла
+    Декоратор функции генерирования отчета с передачей имени файла
     """
 
     def decorator(func):
@@ -84,7 +71,7 @@ def report_decorator(filename):
 
 def report_decorator_wo_filename():
     """
-    Декоратор с передачей имени файла
+    Декоратор функции генерирования отчета без передачи имени файла
     """
 
     root_dir = os.path.dirname(os.path.abspath(__file__))

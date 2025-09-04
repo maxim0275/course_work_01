@@ -5,6 +5,9 @@ from src.utils import get_currency_rate, get_stock, get_user_info
 
 
 def greeting():
+    """
+    Возвращает нужно приветствие в зависимости от времени суток
+    """
     hours = datetime.now().hour
     if 5 < hours < 12:
         return "Доброе утро"
@@ -17,6 +20,10 @@ def greeting():
 
 
 def get_card_out(data_cards, date_param):
+    """
+    на входе данные транзаций и дата
+    на выходе траты по картам за месяц в переданной дате
+    """
     result = []
     # Границы диапазонов выборки
     date_end = datetime.strptime(date_param, "%Y-%m-%d")  # "2021-12-31"
@@ -45,6 +52,9 @@ def get_card_out(data_cards, date_param):
 
 
 def get_top5_tran(data_oper, date_param):
+    """
+    возвращает 5 самых больших транзакций
+    """
     result = []
     # Границы диапазонов выборки
     date_end = datetime.strptime(date_param, "%Y-%m-%d")  # "2021-12-31"
@@ -55,11 +65,6 @@ def get_top5_tran(data_oper, date_param):
 
     # Занести значения по модулю
     data_oper["Сумма платежа"] = data_oper["Сумма платежа"].apply(lambda x: abs(x))
-
-    # Осортировать dataframe по модулю суммы операции и выбрать данные только за период
-    # cards_pays_only = data_oper.loc[
-    #     (data_oper['Сумма платежа'] < 0) & (data_oper['Дата операции'] <= date_end)
-    #     & (data_oper['Дата операции'] >= date_begin)].sort_values(data_oper['Валюта платежа'], ascending=False)
 
     data_for_period = data_oper.loc[
         (data_oper['Дата операции'] <= date_end) & (data_oper['Дата операции'] >= date_begin)]
@@ -84,6 +89,10 @@ def get_top5_tran(data_oper, date_param):
 
 
 def get_currency_rates():
+    """
+    возвращает курсы валют по отношению к рублю
+    :return:
+    """
     # Прочитать компании из настроек пользователя
     user_currencies = get_user_info(3)
 
@@ -99,6 +108,10 @@ def get_currency_rates():
 
 
 def get_stocks():
+    """
+    возвращает цены на акции из списка в конфигурации пользователя
+    :return:
+    """
     # Прочитать компании из настроек пользователя
     company_list = get_user_info(2)
 

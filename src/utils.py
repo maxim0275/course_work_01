@@ -13,6 +13,9 @@ np.set_printoptions(legacy='1.25')
 
 
 def get_user_info(what_info_get):
+    """
+    возвращает пользовательские настройки
+    """
     # 1: filename_opers_data, 2 : user_stocks, 3: user_currencies
 
     path_to_file: str = os.path.join(os.path.dirname(__file__), '../user_settings.json')
@@ -27,7 +30,9 @@ def get_user_info(what_info_get):
 
 
 def reading_operations_from_excel(file_path: str = "") -> list[set[str]] | DataFrame:
-    """Преобразование файла из EXCEL в словарь"""
+    """
+    возвращает dataframe с данными транзакций
+    """
     # Получить имя файла с операциями
     if file_path == "":
         file_path = os.path.join(os.path.dirname(__file__), "..", 'data', get_user_info(1))
@@ -44,12 +49,10 @@ def reading_operations_from_excel(file_path: str = "") -> list[set[str]] | DataF
     return dataframe
 
 
-def format_date_oper(date_str):
-    result = date_str[6:10] + "-" + date_str[3:5] + "-" + date_str[0:2]
-    return result
-
-
 def get_stock(company_code):
+    """
+    возвращает цену акций компании
+    """
     url = f'https://eodhd.com/api/real-time/{company_code}.US?api_token=68b537ae5548f1.52917953&fmt=json'
     payload = {}
     load_dotenv()
@@ -65,6 +68,9 @@ def get_stock(company_code):
 
 
 def get_currency_rate(currency):
+    """
+    возвращает через вызов API курс валюты по отношению к рублю
+    """
     payload = {}
     load_dotenv()
     api_key = os.getenv("API_KEY1")
@@ -80,12 +86,9 @@ def get_currency_rate(currency):
 
 
 def date_add_month(date_src):
+    """
+    возвращает дата на месяц  ранее переданной даты
+    """
     days_in_month = calendar.monthrange(date_src.year, date_src.month)[1]
     date_dst = date_src + timedelta(days=days_in_month - 1)
-    return date_dst
-
-
-def date_sub_month(date_src):
-    days_in_month = calendar.monthrange(date_src.year, date_src.month)[1]
-    date_dst = date_src - timedelta(days=days_in_month - 1)
     return date_dst
