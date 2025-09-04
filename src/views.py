@@ -1,16 +1,21 @@
-from src.cat_web_page_main import (greeting, get_card_out, get_currency_rates,
-                                   get_stocks, get_top5_tran)
-from src.reports import spending_by_category, report_decorator, report_decorator_wo_filename
+from datetime import datetime
+
+import numpy as np
+
+from src.cat_web_page_main import get_card_out, get_currency_rates, get_stocks, get_top5_tran, greeting
+from src.reports import report_decorator, report_decorator_wo_filename, spending_by_category
 from src.services import get_profitable_cashback
 from src.utils import reading_operations_from_excel
-import numpy as np
-np.set_printoptions(legacy='1.25')
+
+np.set_printoptions(legacy="1.25")
 
 
-def get_cat_web_page_main():
+def get_cat_web_page_main(date_par):
     """
     возвращает JSON данные для главной страницы
     """
+
+    date_par_str = datetime.strftime(date_par, format="%Y-%m-%d")
     data = {"greeting": "", "cards": "", "top_transactions": "", "currency_rates": "", "stock_prices": ""}
 
     # Записать приветствие
@@ -21,10 +26,10 @@ def get_cat_web_page_main():
     # print(operations_data)
 
     # Записать расходы по картам
-    cards_out_data = get_card_out(operations_data, '2021-12-31')
+    cards_out_data = get_card_out(operations_data, date_par_str)
 
     # Записать Топ-5 транзакций по сумме платежа
-    top5_transactions = get_top5_tran(operations_data, '2021-12-31')
+    top5_transactions = get_top5_tran(operations_data, date_par_str)
 
     # Записать Курс валют
     currency_rates = get_currency_rates()
@@ -41,6 +46,10 @@ def get_cat_web_page_main():
     return data
 
 
+my_date = datetime.strptime("2021-12-31", "%Y-%m-%d")
+print(get_cat_web_page_main(my_date))
+
+
 def get_cat_serivces_profitable_cashback():
     """
     читает данные транзакций и возвращает выгодные кешбэки
@@ -52,6 +61,7 @@ def get_cat_serivces_profitable_cashback():
 
 # print(get_cat_serivces_profitable_cashback())
 
+
 def get_cat_reoprt_spending_by_category():
     """
     читает данные транзакций и покупки по категории
@@ -61,7 +71,7 @@ def get_cat_reoprt_spending_by_category():
     return data
 
 
-@report_decorator('../data/report.txt')
+@report_decorator("../data/report.txt")
 def generate_report():
     """
     возвращает данные для отчета

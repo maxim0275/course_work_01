@@ -1,18 +1,17 @@
+import functools
 import json
 import os
 from datetime import datetime
 from typing import Optional
+
+import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-import functools
-import numpy as np
 
-np.set_printoptions(legacy='1.25')
+np.set_printoptions(legacy="1.25")
 
 
-def spending_by_category(transactions: pd.DataFrame,
-                         category: str,
-                         date: Optional[str] = None) -> str:
+def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> str:
     """
     возвращает суммы трат по выбранной категории за три месяца от переданной даты
     """
@@ -26,24 +25,24 @@ def spending_by_category(transactions: pd.DataFrame,
     transactions["Дата операции"] = pd.to_datetime(transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S")
 
     # Оставить только данные с нужной категорией и статусом ОК и только платежи (отрицательные суммы)
-    date_cat = transactions.loc[(transactions["Категория"] == category) & (transactions["Статус"] == "OK") & (
-            transactions["Сумма операции"] < 0)]
+    date_cat = transactions.loc[
+        (transactions["Категория"] == category)
+        & (transactions["Статус"] == "OK")
+        & (transactions["Сумма операции"] < 0)
+    ]
 
     # Оставить только данные за требуемый период
     data_need = date_cat.loc[((date_cat["Дата операции"] >= date_begin) & (date_cat["Дата операции"] <= date_end))]
 
-    data_need['День недели'] = data_need['Дата операции'].dt.day_name()
-    data_need['Сумма операции'] = data_need['Сумма операции'].abs()
+    data_need["День недели"] = data_need["Дата операции"].dt.day_name()
+    data_need["Сумма операции"] = data_need["Сумма операции"].abs()
 
-    average_spending_by_day = data_need.groupby('День недели')['Сумма операции'].mean().round().sort_index()
+    average_spending_by_day = data_need.groupby("День недели")["Сумма операции"].mean().round().sort_index()
 
     result_dicts = []
 
     for day, avg_spending in average_spending_by_day.items():
-        result_dict = {
-            'День недели': day,
-            'Средние траты': avg_spending
-        }
+        result_dict = {"День недели": day, "Средние траты": avg_spending}
         result_dicts.append(result_dict)
 
     result_json = json.dumps(result_dicts, ensure_ascii=False, indent=2)
@@ -60,8 +59,8 @@ def report_decorator(filename):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)  # вызов функции-отчета
-            with open(filename, 'w') as file:
-                file.write(str(result) + '\n')  # запись результата в файл
+            with open(filename, "w") as file:
+                file.write(str(result) + "\n")  # запись результата в файл
             return result
 
         return wrapper
@@ -75,15 +74,16 @@ def report_decorator_wo_filename():
     """
 
     root_dir = os.path.dirname(os.path.abspath(__file__))
-    filename = os.path.join(root_dir, "..", "data",
-                            'report_spending_by_category_' + datetime.strftime(datetime.now(), "%Y-%m-%d") + '.txt')
+    filename = os.path.join(
+        root_dir, "..", "data", "report_spending_by_category_" + datetime.strftime(datetime.now(), "%Y-%m-%d") + ".txt"
+    )
 
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)  # вызов функции-отчета
-            with open(filename, 'w') as file:
-                file.write(str(result) + '\n')  # запись результата в файл
+            with open(filename, "w") as file:
+                file.write(str(result) + "\n")  # запись результата в файл
             return result
 
         return wrapper

@@ -1,13 +1,23 @@
+import logging
 from datetime import datetime
+
 import pandas as pd
 
 from src.utils import get_currency_rate, get_stock, get_user_info
+
+cat_web_page_main_logger = logging.getLogger("cat_web_page_main")
+cat_web_page_main_logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
+file_handler = logging.FileHandler("../logs/cat_web_page_main.log", encoding="utf-8", mode="w")
+file_handler.setFormatter(formatter)
+cat_web_page_main_logger.addHandler(file_handler)
 
 
 def greeting():
     """
     Возвращает нужно приветствие в зависимости от времени суток
     """
+    cat_web_page_main_logger.debug("Формирование приветствия")
     hours = datetime.now().hour
     if 5 < hours < 12:
         return "Доброе утро"
@@ -25,6 +35,7 @@ def get_card_out(data_cards, date_param):
     на выходе траты по картам за месяц в переданной дате
     """
     result = []
+    cat_web_page_main_logger.debug("Обработка данных начата")
     # Границы диапазонов выборки
     date_end = datetime.strptime(date_param, "%Y-%m-%d")  # "2021-12-31"
     date_begin = date_end.replace(day=1)  # "2021-12-01"
@@ -34,12 +45,16 @@ def get_card_out(data_cards, date_param):
 
     # Оставить из выборки только расходы
     cards_pays_only = data_cards.loc[
-        (data_cards['Сумма платежа'] < 0) & (data_cards['Дата операции'] <= date_end)
-        & (data_cards['Дата операции'] >= date_begin) & (data_cards['Номер карты'].isna() != True) & (data_cards['Статус'] == "OK")]
+        (data_cards["Сумма платежа"] < 0)
+        & (data_cards["Дата операции"] <= date_end)
+        & (data_cards["Дата операции"] >= date_begin)
+        & (data_cards["Номер карты"].notna())
+        & (data_cards["Статус"] == "OK")
+        ]
 
     # Сформировать Series для сумм и кешбэка
-    card_series_pay = cards_pays_only.groupby('Номер карты', dropna=False)['Сумма платежа'].sum()
-    card_series_cashback = cards_pays_only.groupby('Номер карты', dropna=False)['Кэшбэк'].sum()
+    card_series_pay = cards_pays_only.groupby("Номер карты", dropna=False)["Сумма платежа"].sum()
+    card_series_cashback = cards_pays_only.groupby("Номер карты", dropna=False)["Кэшбэк"].sum()
 
     # Для каждой карты занести сумму расходов и сумму кешбэка
     dicts = {"last_digits": "", "total_spent": 0, "cashback": 0}
@@ -48,6 +63,8 @@ def get_card_out(data_cards, date_param):
         dicts["total_spent"] = abs(card_series_pay.get(card))
         dicts["cashback"] = abs(card_series_cashback.get(card))
         result.append(dicts.copy())
+
+    cat_web_page_main_logger.debug("Обработка данных закончена")
     return result
 
 
@@ -67,16 +84,12 @@ def get_top5_tran(data_oper, date_param):
     data_oper["Сумма платежа"] = data_oper["Сумма платежа"].apply(lambda x: abs(x))
 
     data_for_period = data_oper.loc[
-        (data_oper['Дата операции'] <= date_end) & (data_oper['Дата операции'] >= date_begin)]
+        (data_oper["Дата операции"] <= date_end) & (data_oper["Дата операции"] >= date_begin)
+        ]
 
-    data_sorted = data_for_period.sort_values(by='Сумма платежа', ascending=False).head()
+    data_sorted = data_for_period.sort_values(by="Сумма платежа", ascending=False).head()
 
-    pay_string = {
-        "date": "",
-        "amount": 0,
-        "category": "",
-        "description": ""
-    }
+    pay_string = {"date": "", "amount": 0, "category": "", "description": ""}
 
     for index, pay in data_sorted.iterrows():
         pay_string["date"] = pay["Дата платежа"]
