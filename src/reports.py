@@ -1,5 +1,6 @@
 import functools
 import json
+import logging
 import os
 from datetime import datetime
 from typing import Optional
@@ -10,11 +11,20 @@ from dateutil.relativedelta import relativedelta
 
 np.set_printoptions(legacy="1.25")
 
+reports = logging.getLogger("reports")
+reports.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
+path_to_file: str = os.path.join(os.path.dirname(__file__), "../logs/reports.log")
+file_handler = logging.FileHandler(path_to_file, encoding="utf-8", mode="w")
+file_handler.setFormatter(formatter)
+reports.addHandler(file_handler)
+
 
 def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> str:
     """
     возвращает суммы трат по выбранной категории за три месяца от переданной даты
     """
+    reports.debug("Обработка данных для выборки сумм по дням недели начата")
     if date is None:
         date_end = datetime.strptime("31.12.2021", "%d.%m.%Y")
     else:
@@ -35,6 +45,9 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
     data_need = date_cat.loc[((date_cat["Дата операции"] >= date_begin) & (date_cat["Дата операции"] <= date_end))]
 
     data_need["День недели"] = data_need["Дата операции"].dt.day_name()
+    # data_need["День недели"] = data_need["Дата операции"].apply(
+    #     lambda x: format_date(x, format='EEEE', locale='ru')
+    # )
     data_need["Сумма операции"] = data_need["Сумма операции"].abs()
 
     average_spending_by_day = data_need.groupby("День недели")["Сумма операции"].mean().round().sort_index()
@@ -46,7 +59,7 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
         result_dicts.append(result_dict)
 
     result_json = json.dumps(result_dicts, ensure_ascii=False, indent=2)
-
+    reports.debug("Обработка данных для выборки сумм по дням недели закончена")
     return result_json
 
 
@@ -59,7 +72,7 @@ def report_decorator(filename):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)  # вызов функции-отчета
-            with open(filename, "w") as file:
+            with open(filename, "w", encoding="utf-8") as file:
                 file.write(str(result) + "\n")  # запись результата в файл
             return result
 
@@ -82,7 +95,7 @@ def report_decorator_wo_filename():
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)  # вызов функции-отчета
-            with open(filename, "w") as file:
+            with open(filename, "w", encoding="utf-8") as file:
                 file.write(str(result) + "\n")  # запись результата в файл
             return result
 

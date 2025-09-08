@@ -13,7 +13,10 @@ dependencies = [
     "requests (>=2.32.5,<3.0.0)",
     "dotenv (>=0.9.9,<0.10.0)",
     "black (>=25.1.0,<26.0.0)",
-    "flake8 (>=7.3.0,<8.0.0)"
+    "flake8 (>=7.3.0,<8.0.0)",
+    "babel (>=2.17.0,<3.0.0)",
+    "pytest (==8.4.1)",
+    "parameterized (>=0.9.0,<0.10.0)",
 ]
 
 
@@ -36,3 +39,6 @@ exclude = '.git'
 disallow_untyped_defs = true
 warn_return_any = true
 exclude = 'venv'
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^6.2.1"
+

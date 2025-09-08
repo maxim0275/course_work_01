@@ -1,5 +1,6 @@
 import calendar
 import json
+import logging
 import os
 from datetime import timedelta
 
@@ -9,14 +10,13 @@ from dotenv import load_dotenv
 from pandas import DataFrame
 from requests import request
 
-import logging
-
 np.set_printoptions(legacy="1.25")
 
 utils_logger = logging.getLogger("utils")
 utils_logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
-file_handler = logging.FileHandler("../logs/utils.log", encoding="utf-8", mode="w")
+path_to_file: str = os.path.join(os.path.dirname(__file__), "../logs/utils.log")
+file_handler = logging.FileHandler(path_to_file, encoding="utf-8", mode="w")
 file_handler.setFormatter(formatter)
 utils_logger.addHandler(file_handler)
 

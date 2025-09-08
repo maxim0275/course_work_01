@@ -1,3 +1,6 @@
+import json
+import logging
+import os
 from datetime import datetime
 
 import numpy as np
@@ -7,11 +10,20 @@ from src.utils import date_add_month
 
 np.set_printoptions(legacy="1.25")
 
+services = logging.getLogger("services")
+services.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s")
+path_to_file: str = os.path.join(os.path.dirname(__file__), "../logs/services.log")
+file_handler = logging.FileHandler(path_to_file, encoding="utf-8", mode="w")
+file_handler.setFormatter(formatter)
+services.addHandler(file_handler)
+
 
 def get_profitable_cashback(data, year_par="2021", month_par="12"):
     """
     возвращает выгодные позиции кешбэка
     """
+    services.debug("Обработка данных для выгодного кешбэка начата")
     # Преобразовать столбец даты
     data["Дата платежа"] = pd.to_datetime(data["Дата платежа"], format="%d.%m.%Y")
 
@@ -34,7 +46,6 @@ def get_profitable_cashback(data, year_par="2021", month_par="12"):
     series_cashback_cats = (
         data_for_non_emt_cashback.groupby("Категория", dropna=False)["Кэшбэк"].sum().sort_values(ascending=False)
     )
-    # for category in series_cashback_cats.keys():
-    #     result[category] = series_cashback_cats.get(category)
-
-    return dict(series_cashback_cats)
+    json_output = json.dumps(dict(series_cashback_cats), ensure_ascii=False, indent=2)
+    services.debug("Обработка данных для выгодного кешбэка закончена")
+    return json_output
