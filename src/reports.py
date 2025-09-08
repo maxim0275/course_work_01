@@ -22,7 +22,7 @@ reports.addHandler(file_handler)
 
 def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> str:
     """
-    возвращает суммы трат по выбранной категории за три месяца от переданной даты
+    Возвращает суммы трат по выбранной категории за три месяца от переданной даты
     """
     reports.debug("Обработка данных для выборки сумм по дням недели начата")
     if date is None:
