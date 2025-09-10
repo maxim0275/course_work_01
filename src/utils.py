@@ -142,7 +142,7 @@ def get_card_out(data_cards, date_param):
         & (data_cards["Дата операции"] >= date_begin)
         & (data_cards["Номер карты"].notna())
         & (data_cards["Статус"] == "OK")
-        ]
+    ]
 
     # Сформировать Series для сумм и кешбэка
     card_series_pay = cards_pays_only.groupby("Номер карты", dropna=False)["Сумма платежа"].sum().round(2)
@@ -178,7 +178,7 @@ def get_top5_tran(data_oper, date_param):
 
     data_for_period = data_oper.loc[
         (data_oper["Дата операции"] <= date_end) & (data_oper["Дата операции"] >= date_begin)
-        ]
+    ]
 
     data_sorted = data_for_period.sort_values(by="Сумма платежа", ascending=False).head()
 

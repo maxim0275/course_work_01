@@ -5,8 +5,14 @@ import numpy as np
 
 from src.reports import report_decorator, report_decorator_wo_filename, spending_by_category
 from src.services import get_profitable_cashback
-from src.utils import (get_card_out, get_currency_rates, get_stocks, get_top5_tran, greeting,
-                       reading_operations_from_excel)
+from src.utils import (
+    get_card_out,
+    get_currency_rates,
+    get_stocks,
+    get_top5_tran,
+    greeting,
+    reading_operations_from_excel,
+)
 
 np.set_printoptions(legacy="1.25")
 
@@ -90,6 +96,7 @@ def generate_report_wo_filename():
     """
     report = get_cat_report_spending_by_category()
     return report
+
 
 # Вызов функции-отчета
 # generate_report_wo_filename()

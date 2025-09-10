@@ -83,7 +83,7 @@ def report_decorator(filename):
 
 def report_decorator_wo_filename():
     """
-     Декоратор функции генерирования отчета без передачи имени файла
+    Декоратор функции генерирования отчета без передачи имени файла
     """
 
     root_dir = os.path.dirname(os.path.abspath(__file__))
