@@ -3,25 +3,26 @@ from datetime import datetime
 
 import numpy as np
 
-from src.cat_web_page_main import get_card_out, get_currency_rates, get_stocks, get_top5_tran, greeting
 from src.reports import report_decorator, report_decorator_wo_filename, spending_by_category
 from src.services import get_profitable_cashback
-from src.utils import reading_operations_from_excel
+from src.utils import (get_card_out, get_currency_rates, get_stocks, get_top5_tran, greeting,
+                       reading_operations_from_excel)
 
 np.set_printoptions(legacy="1.25")
 
 
-def get_cat_web_page_main(date_par):
+def get_cat_web_page_main(date_par_str: str):
     """
     возвращает JSON данные для главной страницы
     """
 
-    date_par_str = datetime.strftime(date_par, format="%Y-%m-%d %H:%M:%S")
     data = {"greeting": "", "cards": "", "top_transactions": "", "currency_rates": "", "stock_prices": ""}
 
-    # Записать приветствие
-    # if not parser.parse(date_par):
-    #     return "Некорректная дата"
+    try:
+        date_par = datetime.strptime(date_par_str, "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        print("Передана неверная дата")
+        return data
 
     greeting_text = greeting(date_par)
 
@@ -50,10 +51,6 @@ def get_cat_web_page_main(date_par):
     return json.dumps(data, ensure_ascii=False, indent=2)
 
 
-# my_date = datetime.strptime("2021-12-31 23:00:00", "%Y-%m-%d %H:%M:%S")
-# print(get_cat_web_page_main(my_date))
-
-
 def get_cat_services_profitable_cashback():
     """
     читает данные транзакций и возвращает выгодные кешбэки
@@ -61,9 +58,6 @@ def get_cat_services_profitable_cashback():
     operations_data = reading_operations_from_excel()
     operations_data = get_profitable_cashback(operations_data, year_par="2021", month_par="11")
     return operations_data
-
-
-# print(get_cat_services_profitable_cashback())
 
 
 def get_cat_report_spending_by_category():
@@ -96,7 +90,6 @@ def generate_report_wo_filename():
     """
     report = get_cat_report_spending_by_category()
     return report
-
 
 # Вызов функции-отчета
 # generate_report_wo_filename()

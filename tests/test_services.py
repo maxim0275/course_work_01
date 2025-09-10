@@ -1,6 +1,7 @@
-import unittest
-import pandas as pd
 import json
+import unittest
+
+import pandas as pd
 
 from src.services import get_profitable_cashback
 

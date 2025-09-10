@@ -1,22 +1,20 @@
-import pytest
-from unittest.mock import patch
-from datetime import datetime
 import json
+from unittest.mock import patch
 
-from src.views import (
-    get_cat_web_page_main,
-    get_cat_services_profitable_cashback,
-    get_cat_report_spending_by_category)
+import pytest
+
+from src.views import get_cat_report_spending_by_category, get_cat_services_profitable_cashback, get_cat_web_page_main
 
 
 # Фикстура для даты операции
 @pytest.fixture
 def transaction_date():
-    return datetime.strptime("2021-12-31 23:00:00", "%Y-%m-%d %H:%M:%S")
+    return "2021-12-31 23:00:00"
 
 
 @pytest.mark.parametrize(
-    "mock_operations_data, mock_greeting_result, mock_card_out, mock_top_transactions, mock_currency_rates, mock_stock_prices",
+    "mock_operations_data, mock_greeting_result, mock_card_out, "
+    "mock_top_transactions, mock_currency_rates, mock_stock_prices",
     [
         (
                 [{"operation": "transaction details"}],
@@ -27,7 +25,7 @@ def transaction_date():
                 "Stock Prices"
         ),
     ])
-@patch('src.utils.reading_operations_from_excel')
+@patch('src.views.reading_operations_from_excel')
 @patch('src.views.greeting')
 @patch('src.views.get_card_out')
 @patch('src.views.get_top5_tran')
