@@ -25,10 +25,10 @@ class TestSafeVacancyJson(unittest.TestCase):
         """Тестирование метода safe_vacancy"""
         self.safe_vacancy.safe_vacancy(self.vacancy_data, self.filename)
 
-        # Проверяем, что файл создан
+        # Проверяем, что файл  создан
         self.assertTrue(os.path.exists(self.filename))
 
-        # Проверяем содержимое файла
+        # Проверяем содержимое  файла
         with open(self.filename, "r", encoding="utf-8") as file:
             data = json.load(file)
             self.assertEqual(data, self.vacancy_data)
