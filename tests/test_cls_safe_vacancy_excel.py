@@ -8,7 +8,7 @@ class TestSafeVacancyExcel(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.filename = "data/vacancy_xls.xlsx"
+        cls.filename = "../data/vacancy_xls.xlsx"
         cls.safe_vacancy_excel = SafeVacancyExcel()
 
     def setUp(self):
