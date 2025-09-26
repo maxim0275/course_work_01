@@ -1,6 +1,6 @@
-import unittest
 import json
 import os
+import unittest
 
 from src.cls_vacancy_file import VacancyFile
 
@@ -8,14 +8,14 @@ from src.cls_vacancy_file import VacancyFile
 class TestVacancyFile(unittest.TestCase):
 
     def setUp(self):
-        """ Метод, который выполняется перед каждым тестом """
-        self.filename = 'test_vacancies.json'
+        """Метод, который выполняется перед каждым тестом"""
+        self.filename = "test_vacancies.json"
         self.vacancy_file = VacancyFile(self.filename)
 
         # Начальные данные для заполнения файла
         self.sample_data = [
             {"title": "Разработчик Python", "salr_from": 100000, "area_name": "Москва"},
-            {"title": "Frontend Developer", "salr_from": 80000, "area_name": "Санкт-Петербург"}
+            {"title": "Frontend Developer", "salr_from": 80000, "area_name": "Санкт-Петербург"},
         ]
 
         # Создаем файл с начальными данными
@@ -23,15 +23,15 @@ class TestVacancyFile(unittest.TestCase):
             json.dump(self.sample_data, file)
 
     def tearDown(self):
-        """ Метод, который выполняется после каждого теста """
+        """Метод, который выполняется после каждого теста"""
         if os.path.exists(self.filename):
             os.remove(self.filename)
 
     def test_add_vacancy_tofile(self):
-        """ Тестирование метода добавления вакансий в файл """
+        """Тестирование метода добавления вакансий в файл"""
         new_data = [
             {"title": "Системный администратор", "salr_from": 90000, "area_name": "Москва"},
-            {"title": "Разработчик Python", "salr_from": 100000, "area_name": "Москва"}  # Дубликат
+            {"title": "Разработчик Python", "salr_from": 100000, "area_name": "Москва"},  # Дубликат
         ]
 
         self.vacancy_file.add_vacancy_tofile(new_data)
@@ -44,7 +44,7 @@ class TestVacancyFile(unittest.TestCase):
             self.assertIn(new_data[0], result_data)
 
     def test_get_vacacny_fromfile(self):
-        """ Тестирование метода получения вакансий """
+        """Тестирование метода получения вакансий"""
         # Получение вакансий с параметрами фильтрации
         filtered_data = self.vacancy_file.get_vacacny_fromfile(salary_mask=90000, area_name_mask="Москва")
         self.assertEqual(len(filtered_data), 1)  # Должен вернуться только один элемент
@@ -55,7 +55,7 @@ class TestVacancyFile(unittest.TestCase):
         self.assertEqual(len(all_data), len(self.sample_data))
 
     def test_del_vacancy_fromfile(self):
-        """ Тестирование метода удаления вакансий из файла """
+        """Тестирование метода удаления вакансий из файла"""
         self.vacancy_file.del_vacancy_fromfile()
 
         with open(self.filename, "r", encoding="utf-8") as file:
@@ -64,5 +64,6 @@ class TestVacancyFile(unittest.TestCase):
             # Проверяем, что файл стал пустым (или равен None)
             self.assertIsNone(result_data)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

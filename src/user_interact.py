@@ -1,4 +1,3 @@
-
 from src.cls_vacancy import HHVacancy
 from src.cls_work_api import HeadHunterHAPI
 
@@ -37,8 +36,7 @@ def user_interact() -> None:
                 hh = HeadHunterHAPI()
                 getted_vacancy = hh.get_vacancies(cond_keyword)
                 for vac in getted_vacancy:
-                    obj_vac = HHVacancy(vac['id'], vac['name'], vac['area_name'], vac['salr_from'],
-                                        vac['salr_to'])
+                    obj_vac = HHVacancy(vac["id"], vac["name"], vac["area_name"], vac["salr_from"], vac["salr_to"])
                     print(obj_vac)
 
         elif user_answer == "4":
@@ -47,7 +45,6 @@ def user_interact() -> None:
             else:
                 hh = HeadHunterHAPI()
                 getted_vacancy = hh.get_vacancies()
-                for vac in getted_vacancy[:int(cond_salary)]:
-                    obj_vac = HHVacancy(vac['id'], vac['name'], vac['area_name'], vac['salr_from'],
-                                        vac['salr_to'])
+                for vac in getted_vacancy[: int(cond_salary)]:
+                    obj_vac = HHVacancy(vac["id"], vac["name"], vac["area_name"], vac["salr_from"], vac["salr_to"])
                     print(obj_vac)

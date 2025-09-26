@@ -27,7 +27,8 @@ def get_currency_rate(currency):
     if response.status_code == 200:
         result_json = response.json()
     else:
-        utils_logger.warning(f"при получении курса валюты {currency} "
-                             f"получен ответ {response.status_code}: {response.content}")
+        utils_logger.warning(
+            f"при получении курса валюты {currency} " f"получен ответ {response.status_code}: {response.content}"
+        )
         return []
     return result_json

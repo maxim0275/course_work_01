@@ -1,15 +1,14 @@
 import os
 
+import requests
 from dotenv import load_dotenv
 
 from src.cls_base_work_api import GetVacAPI
-import requests
-
 from src.utils import get_currency_rate
 
 
 class HeadHunterHAPI(GetVacAPI):
-    """ Класс для получения вакансий с сайта с помощью API """
+    """Класс для получения вакансий с сайта с помощью API"""
 
     def __init__(self):
         self._answer = None
@@ -27,10 +26,7 @@ class HeadHunterHAPI(GetVacAPI):
 
         try:
             # Выполнение GET-запроса к API
-            response = requests.get(
-                url_api,
-                params=params
-            )
+            response = requests.get(url_api, params=params)
 
             # Проверка успешности запроса
             response.raise_for_status()
@@ -44,42 +40,28 @@ class HeadHunterHAPI(GetVacAPI):
             return None
 
     def get_vacancies(self, key_word: str = None) -> list:
-        """ Метод для получения вакансий с сайта с помощью API """
+        """Метод для получения вакансий с сайта с помощью API"""
         """ Метод получает вакансии по запросу, в зависимости от параметров. Если key_word=False,
         то запрос выполняется по всем вакансиям с указанной зарплатой
         """
         if key_word:
-            params = {
-                'text': key_word,
-                'currency': 'RUR',
-                'only_with_salary': 'true',
-                'page': 0,
-                'per_page': 50
-
-            }
+            params = {"text": key_word, "currency": "RUR", "only_with_salary": "true", "page": 0, "per_page": 50}
         else:
-            params = {
-                'currency': 'RUR',
-                'only_with_salary': 'true',
-                'salary': '1000000',
-                'page': 0,
-                'per_page': 50
-
-            }
+            params = {"currency": "RUR", "only_with_salary": "true", "salary": "1000000", "page": 0, "per_page": 50}
 
         # получить вакансии
         response = self._connect_to_api(params)
 
-        vacancy_list = response.json()['items']
+        vacancy_list = response.json()["items"]
         vacancy_cutted_list = []
         if response.status_code == 200 and len(vacancy_list) > 0:
 
             def cut_attr(vacancy_dict) -> list:
-                """ Вернуть список со словарями только с указанными ключами"""
+                """Вернуть список со словарями только с указанными ключами"""
                 return {k: vacancy_dict[k] for k in attr_dest}
 
             def convert_to_rur(src_val, koeff) -> float:
-                """ Если задан коэффициент, то вернуть сумму, умноженную на коэффициент"""
+                """Если задан коэффициент, то вернуть сумму, умноженную на коэффициент"""
                 if isinstance(src_val, int):
                     return src_val * koeff
                 else:
@@ -92,22 +74,24 @@ class HeadHunterHAPI(GetVacAPI):
                         print(f"для валюты {rate_curr} не найден курс. Коэффициент преревода в рубли установлен в 1")
                         rates[rate_curr] = 1
                     else:
-                        rates[rate_curr] = queried_rate_curr['result']
+                        rates[rate_curr] = queried_rate_curr["result"]
 
             # вынести на первый уровень словаря
             #   name из area; from, to из salary
-            rates = {'RUR': 1}
+            rates = {"RUR": 1}
             for vacancy in vacancy_list:
-                vacancy['area_name'] = vacancy.get('area').get('name', 'нет')
+                vacancy["area_name"] = vacancy.get("area").get("name", "нет")
 
                 # обработать валюту вакансии. Если курса валюты нет в списке - запросить через API и добавить
-                to_process_rate_curr(vacancy.get('salary').get('currency', 'нет'))
+                to_process_rate_curr(vacancy.get("salary").get("currency", "нет"))
 
                 # если указаны числовые значения границ зарплат, то привести их к рублю
-                vacancy['salr_from'] = convert_to_rur(vacancy.get('salary').get('from', 0),
-                                                      rates[vacancy.get('salary').get('currency', 'нет')])
-                vacancy['salr_to'] = convert_to_rur(vacancy.get('salary').get('to', 0),
-                                                    rates[vacancy.get('salary').get('currency', 'нет')])
+                vacancy["salr_from"] = convert_to_rur(
+                    vacancy.get("salary").get("from", 0), rates[vacancy.get("salary").get("currency", "нет")]
+                )
+                vacancy["salr_to"] = convert_to_rur(
+                    vacancy.get("salary").get("to", 0), rates[vacancy.get("salary").get("currency", "нет")]
+                )
 
             # Оставить только нужные ключи в списке
             attr_dest = ["id", "name", "area_name", "salr_from", "salr_to"]

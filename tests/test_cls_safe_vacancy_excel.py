@@ -1,5 +1,6 @@
-import unittest
 import os
+import unittest
+
 from src.cls_safe_vacancy_excel import SafeVacancyExcel
 
 

@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+
 import requests
 
 
 class GetVacAPI(ABC):
-    """ Абстрактный класс для получения вакансий с сайта с помощью API """
+    """Абстрактный класс для получения вакансий с сайта с помощью API"""
 
     @abstractmethod
     def _connect_to_api(self, params=None) -> requests.models.Response:
@@ -11,7 +12,7 @@ class GetVacAPI(ABC):
 
     @abstractmethod
     def get_vacancies(self, key_word: str = None) -> None:
-        """ Метод для получения вакансий с сайта с помощью API """
+        """Метод для получения вакансий с сайта с помощью API"""
         pass
 
     @abstractmethod

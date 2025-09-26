@@ -1,10 +1,10 @@
 class HHVacancy:
-    """ Класс для работы с вакансиями: объект при инициализации
+    """Класс для работы с вакансиями: объект при инициализации
     проверяет корректность значения параметров,
      зарплата устанавливается в среднее значение между границами,
-     или значению одной из границ, иначе равняется нулю """
+     или значению одной из границ, иначе равняется нулю"""
 
-    __slots__ = ('vacancy_id', 'name', 'area_name', 'salary')
+    __slots__ = ("vacancy_id", "name", "area_name", "salary")
 
     def __init__(self, vacancy_id: str, name: str, area_name: str, salr_from: int, salr_to: int) -> None:
         if str(vacancy_id).isdigit():
@@ -31,19 +31,19 @@ class HHVacancy:
             self.salary = salr_to
 
     def __lt__(self, other) -> bool:
-        """ Метод для сравнения меньше """
+        """Метод для сравнения меньше"""
         return self.salary < other.salary
 
     def __le__(self, other) -> bool:
-        """ Метод для сравнения меньше или равно """
+        """Метод для сравнения меньше или равно"""
         return self.salary <= other.salary
 
     def __gt__(self, other) -> bool:
-        """ Метод для сравнения больше """
+        """Метод для сравнения больше"""
         return self.salary > other.salary
 
     def __ge__(self, other) -> bool:
-        """ Метод для сравнения больше или равно """
+        """Метод для сравнения больше или равно"""
         return self.salary >= other.salary
 
     def __repr__(self) -> str:

@@ -1,14 +1,14 @@
 import unittest
-from unittest.mock import patch, MagicMock
-import os
+from unittest.mock import MagicMock, patch
+
 from src.utils import get_currency_rate  # Измените путь на правильный для вашего проекта
 
 
 class TestGetCurrencyRate(unittest.TestCase):
 
-    @patch('src.utils.request')  # Патчим метод request из модуля requests
-    @patch('src.utils.load_dotenv')  # Патчим метод load_dotenv
-    @patch('src.utils.os.getenv')  # Патчим os.getenv
+    @patch("src.utils.request")  # Патчим метод request из модуля requests
+    @patch("src.utils.load_dotenv")  # Патчим метод load_dotenv
+    @patch("src.utils.os.getenv")  # Патчим os.getenv
     def test_get_currency_rate_success(self, mock_getenv, mock_load_dotenv, mock_request):
         """Тест успешного получения курса валюты"""
         mock_load_dotenv.return_value = None
@@ -25,9 +25,9 @@ class TestGetCurrencyRate(unittest.TestCase):
         self.assertEqual(result, {"result": 75.0})
         mock_request.assert_called_once()  # Проверяем, что запрос был выполнен один раз
 
-    @patch('src.utils.request')  # Патчим метод request
-    @patch('src.utils.load_dotenv')  # Патчим метод load_dotenv
-    @patch('src.utils.os.getenv')  # Патчим os.getenv
+    @patch("src.utils.request")  # Патчим метод request
+    @patch("src.utils.load_dotenv")  # Патчим метод load_dotenv
+    @patch("src.utils.os.getenv")  # Патчим os.getenv
     def test_get_currency_rate_failure(self, mock_getenv, mock_load_dotenv, mock_request):
         """Тест обработки ошибки при получении курса валюты"""
         mock_load_dotenv.return_value = None
