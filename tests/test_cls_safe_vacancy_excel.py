@@ -12,7 +12,7 @@ class TestSafeVacancyExcel(unittest.TestCase):
         cls.safe_vacancy_excel = SafeVacancyExcel()
 
     def setUp(self):
-        # Создадим данные для тестирования
+        # Создадим данные для  тестирования
         self.test_data = [
             {"title": "Vacancy 1", "company": "Company A", "salary": 100000},
             {"title": "Vacancy 2", "company": "Company B", "salary": 120000},
